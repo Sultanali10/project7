@@ -72,19 +72,24 @@ class ViewController: UITableViewController {
     }
     
     func showFilteredPetitions(searchWord word: String){
-        filteredPetitions.removeAll()
-        for petition in petitions {
-            if petition.title.contains(word) || petition.body.contains(word){
-                filteredPetitions.append(petition)
+        DispatchQueue.global(qos: .userInitiated).async {
+            
+            self.filteredPetitions.removeAll()
+            for petition in self.petitions {
+                if petition.title.contains(word) || petition.body.contains(word){
+                    self.filteredPetitions.append(petition)
+                }
+                self.showingPetitions = self.filteredPetitions
+
+                DispatchQueue.main.async {
+                    let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(self.clearFilter))
+                    self.navigationItem.leftBarButtonItem = clear
+                    clear.tintColor = .red
+                    self.tableView.reloadData()
+                }
             }
-            showingPetitions = filteredPetitions
-            
-            let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearFilter))
-            navigationItem.leftBarButtonItem = clear
-            clear.tintColor = .red
-            
-            tableView.reloadData()
         }
+        
     }
     
     @objc func clearFilter(){
@@ -135,7 +140,7 @@ class ViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let vc = DetailViewController()
-        vc.detailItem = petitions[indexPath.row]
+        vc.detailItem = showingPetitions[indexPath.row]
         
         navigationController?.pushViewController(vc, animated: true)
     }
