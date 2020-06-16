@@ -18,14 +18,13 @@ class ViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
-        
-        
         let credit = UIBarButtonItem(title: "Credits", style: .plain, target: self, action: #selector(credits))
         navigationItem.rightBarButtonItem = credit
         
         let filter = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filteringPetitions))
         navigationItem.leftBarButtonItem = filter
+        
+        
         
         
         var urlString: String
@@ -79,8 +78,22 @@ class ViewController: UITableViewController {
                 filteredPetitions.append(petition)
             }
             showingPetitions = filteredPetitions
+            
+            let clear = UIBarButtonItem(title: "Clear", style: .plain, target: self, action: #selector(clearFilter))
+            navigationItem.leftBarButtonItem = clear
+            clear.tintColor = .red
+            
             tableView.reloadData()
         }
+    }
+    
+    @objc func clearFilter(){
+        showingPetitions = petitions
+        
+        let filter = UIBarButtonItem(title: "Filter", style: .plain, target: self, action: #selector(filteringPetitions))
+        navigationItem.leftBarButtonItem = filter
+        
+        tableView.reloadData()
     }
     
     func parse(json: Data){
