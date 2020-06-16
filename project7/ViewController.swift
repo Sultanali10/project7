@@ -38,14 +38,17 @@ class ViewController: UITableViewController {
             
         }
         
+        DispatchQueue.global(qos: .userInitiated).async{
+            [weak self] in
         if let url = URL(string: urlString) {
             if let data = try? Data(contentsOf: url){
-                  parse(json: data)
+                self?.parse(json: data)
                 return
+                }
             }
+            self?.errorMessage()
         }
         
-        errorMessage()
     }
     
     @objc func credits(){
@@ -85,15 +88,23 @@ class ViewController: UITableViewController {
         if let jsonPetitions = try? decoder.decode(Petitions.self, from: json){
             petitions = jsonPetitions.results
             showingPetitions = petitions
-            tableView.reloadData()
+            
+            DispatchQueue.main.async {
+                [weak self] in
+                self?.tableView.reloadData()
+            }
+            
         }
         
     }
     
     func errorMessage(){
-       let ac = UIAlertController(title: "Error", message: "There was an error, please check", preferredStyle: .alert)
-        ac.addAction(UIAlertAction(title: "OK", style: .default))
-        present(ac, animated: true)
+        DispatchQueue.main.async {
+            [weak self] in
+            let ac = UIAlertController(title: "Error", message: "There was an error, please check", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default))
+            self?.present(ac, animated: true)
+        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
